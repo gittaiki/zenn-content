@@ -6,7 +6,7 @@ topics: ["rails", "ruby", "sql"]
 published: true
 ---
 
-## 概要
+## はじめに
 
 個人的によく見るActiveRecordで、どのようなSQLが実行されるのか確認し、SQLの基礎を固める
 
@@ -58,7 +58,7 @@ usersとarticlesテーブルの各カラムとレコードは以下になりま�
 
 ## ActiveRecord
 
-railsコンソールでActiveRecordを実行し、生成されるSQLを見ていきます。
+RailsコンソールでActiveRecordを実行し、生成されるSQLを見ていきます。
 ※SQL以外の実行結果（=>以降）の説明は割愛
 
 ### pluck
@@ -252,6 +252,8 @@ SELECT 1 AS one FROM "users" WHERE "users"."id" = ? LIMIT ?  [["id", 5], ["LIMIT
 
 `SELECT 1 AS one`:：`1`を選択し、その数値に`one`という名前（エイリアス）を付けています。レコードがあるかどうかの判定に使いたいだけなので、カラムを指定していない。
 SQLはデータの存在を確認するためのもので、取得した結果をもとにRubyが真偽値を返している。
+
+## おまけ
 
 ### enum
 
