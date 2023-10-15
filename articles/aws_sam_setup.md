@@ -127,4 +127,4 @@ Hello, World!
 
 ## 参考記事
 
-https://pages.awscloud.com/JAPAN-event-OE-Hands-on-for-Beginners-Serverless-2-2022-confirmation_009.html
+https://pages.awscloud.com/JAPAN-event-OE-Hands-on-for-Beginners-Serverless-2-2022-reg-event.html?trk=aws_introduction_page
