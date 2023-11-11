@@ -8,20 +8,19 @@ published: true
 
 ## はじめに
 
-以前作成した記事[【SAM】Lambda + API Gatewayの開発環境構築](https://zenn.dev/y_taiki/articles/aws_sam_setup)では開発環境を構築しました。
-今回は本番環境を構築し、AWS上にLambdaとAPI Gatewayを、GitHub Actionsで自動デプロイするように実装します。
+AWS上にLambdaとAPI Gatewayを、GitHub Actionsで自動デプロイするように実装します。
 
 ## 前提
 
 以下条件の`IAMロール`は、AWSで作成済みとします。
-ウェブアイデンティティプロバイダー
-- token.actions.githubusercontent.com
+- ウェブアイデンティティプロバイダー
+token.actions.githubusercontent.com
 
-ポリシーのサービス
-1. S3
-2. CloudFormation
-3. Lambda
-4. API Gateway
+- ポリシーのサービス
+S3
+CloudFormation
+Lambda
+API Gateway
 
 :::message alert
 ポリシーのアクション・リソース等は適宜設定してください
@@ -36,8 +35,9 @@ published: true
 `-- template.production.yaml
 ```
 
-template.production.yamlファイルに本番環境の定義を記述します。
+template.production.yamlファイルにはデプロイするLambdaとAPI Gatewayを定義しています。
 
+:::details template.production.yaml
 ```yaml:template.production.yaml
 Transform: AWS::Serverless-2016-10-31
 Resources:
@@ -66,6 +66,7 @@ Resources:
       StageName: production
       EndpointConfiguration: REGIONAL
 ```
+:::
 
 ## 自動デプロイを実装
 
@@ -77,7 +78,7 @@ $ git checkout -b github_actions
 
 ### S3作成
 
-デプロイ時に、コードとリソース等をアップロードするためのS3を作成します。
+デプロイ時、コード等をアップロードするためのS3を作成します。
 
 ```bash
 aws s3 mb s3://sample_bucket
@@ -96,7 +97,7 @@ $ mkdir -p .github/workflows
 $ touch .github/workflows/deploy.yml
 ```
 
-deploy.ymlファイルには、AWS上へ自動デプロイするための定義を記述します。
+deploy.ymlファイルには、AWS上へ自動デプロイするために必要な定義を記述します。
 
 ```yml:deploy.yml
 name: production
@@ -156,9 +157,8 @@ jobs:
 
 以上で実装終了です。
 `github_actions`ブランチの変更内容をGitHubにpushすると、GitHub Actionsが実行されます。
-ワークフローの実行内容は`Actions`から確認できます。
-Statusが`Success`✅になると、自動デプロイ完了です🎉
-AWSマネジメントコンソールではLambdaと、API Gatewayが正常にデプロイされていることを確認できます。
+ワークフローの実行内容は`Actions`から確認でき、Statusが`Success`✅になると、自動デプロイ完了です🎉
+LambdaとAPI Gatewayが正常にデプロイされているかは、AWSマネジメントコンソールで確認してみて下さい。
 
 ## 参考記事
 
