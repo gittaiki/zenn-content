@@ -14,7 +14,7 @@ AWS SAMでLambda A（リクエスト受付）から Lambda B（処理実行）�
 RequestFunction（Lambda A） → ProcessorFunction（Lambda B）
 ```
 
-呼び出す側のLambda Aに `lambda:InvokeFunction` 権限を付与していたので問題ないと思っていたが、Lambda B（処理実行）へのアクセス権限エラーが発生しました。
+呼び出す側のLambda Aに `lambda:InvokeFunction` 権限を付与していたのでLambda B（処理実行）を呼び出せると思っていたが、アクセス拒否されました。
 今回はこのエラー原因と解決をします。
 
 ## 構成
@@ -50,7 +50,7 @@ Resources:
       Runtime: python3.9
 ```
 
-RequestFunctionのPoliciesに`lambda:InvokeFunction`を書いたため、呼び出せると思っていました。
+RequestFunctionのPoliciesに`lambda:InvokeFunction`を書いたため、ProcessorFunctionを呼び出せると思っていました。
 しかし、デプロイ後にRequestFunctionを実行すると、以下のようなエラーが発生しました。
 ```
 [ERROR] ClientError: An error occurred (AccessDeniedException) when calling the Invoke operation: User: arn:aws:sts::*** is not authorized to perform: lambda:InvokeFunction on resource: arn:aws:lambda:*** because no identity-based policy allows the lambda:InvokeFunction action
@@ -69,10 +69,11 @@ RequestFunctionのPoliciesに`lambda:InvokeFunction`を書いたため、呼び�
 
 ## 解決方法
 
-`Lambda::Permission`を`template.yaml`に追加したところ、無事に呼び出しできるようになりました🎉
+`Lambda::Permission`を`template.yaml`に追加したところ、無事にProcessorFunctionを呼び出せるようになりました🎉
 
 ```yaml
 Resources:
+  # 以下を追加
   ProcessorFunctionPermission:
     Type: AWS::Lambda::Permission
     Properties:
@@ -85,13 +86,13 @@ Resources:
 項目の補足：
 
 - `Action`: Lambdaを呼び出す操作を許可
-- `FunctionName`: 呼び出される関数（ProcessorFunction）
-- `SourceArn`: 呼び出し元のLambda関数（RequestFunction）
+- `FunctionName`: 呼び出されるLambda（ProcessorFunction）
+- `SourceArn`: 呼び出し元のLambda（RequestFunction）
 
 ## おわりに
 
 DynamoDBやS3にアクセスする場合は、IAMロールに必要な権限を付与すればアクセスできます。
-しかし、Lambdaを呼び出す場合はそれだけでは不十分で、呼び出される側の関数に対しても、誰からの呼び出しを許可するかを設定する必要があることがわかりました。
+しかし、Lambdaを呼び出す場合はそれだけでは不十分で、呼び出される側のLambdaに対しても、誰からの呼び出しを許可するかを設定する必要があることがわかりました。
 
 ## 参考記事
 
